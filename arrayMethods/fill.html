@@ -1,0 +1,111 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The fill() method fills (overwrites) all the elements of an array from a start index to an end index with a static value.
+
+// Function signature:
+  // fill(array, value[, start[, end]])
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // Returns the modified array.
+
+// Requirements:
+  // It should change all the elements of the array to the new value if neither start or end are provided.
+  // If start is provided, it should only change elements from the start index to the end of the array.
+  // If end is provided, it should only change elements from the start index up to but not including the end index.
+  // It should return the modified array.
+  // If start is negative, it should be treated as an offset from the length of the array (length + start).
+  // If end is negative, it should be treated as an offset from the length of the array (length + end).
+
+// Prototype implementation:
+// function fill(array, value) {
+//     for (var i = 0; i < array.length; i++) {
+//         array[i] = value;
+//     }
+    
+//     return array;
+// }
+
+function fill(array, value, start, end) {
+    
+  if (arguments.length < 4) { // end is not provided
+    end = array.length;
+
+    if (arguments.length < 3) { // end and start are both not provided
+      start = 0;
+    } else {  // start is provided, but end is not
+      if (start < 0) {  // offset if start is negative
+        start = array.length + start;
+      }
+    }
+  } else {  // end is provided, which means start is also provided
+    if (end < 0) {  // offset if end is negative
+      end = array.length + end;
+    }
+
+    if (start < 0) {  // offset if start is negative
+      start = array.length + start;
+    }
+  }
+
+    
+  for (var i = start; i < end; i++) {
+      array[i] = value;
+  }
+  
+  return array;
+}
+
+tests({
+  'It should change all the elements of the array to the new value if neither start or end are provided.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [0, 0, 0];
+    fill(testArray, 0);
+    testArray.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'If start is provided, it should only change elements from the start index to the end of the array.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 0, 0];
+    fill(testArray, 0, 1);
+    testArray.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'If end is provided, it should only change elements from the start index up to but not including the end index.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 0, 3];
+    fill(testArray, 0, 1, 2);
+    testArray.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should return the modified array.': function() {
+    var testArray = [1, 2, 3];
+    var result = fill(testArray, 0);
+    eq(result, testArray);
+  },
+  'If start is negative, it should be treated as an offset from the length of the array (length + start).': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 2, 0];
+    fill(testArray, 0, -1);
+    testArray.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'If end is negative, it should be treated as an offset from the length of the array (length + end).': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 0, 3];
+    fill(testArray, 0, 1, -1);
+    testArray.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  }
+});
+
+</script>

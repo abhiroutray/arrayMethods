@@ -1,0 +1,76 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The unshift() method adds one or more elements to the beginning of an array and returns the new length of the array.
+
+// Function signature:
+  // unshift(array, element1[, ...[, elementN]])
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // The new length of the array.
+
+// Requirements:
+  // It should add elements to the beginning of the array.
+  // It should accept multiple elements to add to the array.
+  // It should increase the length of the array by the number of arguments other than the array itself.
+  // It should return the new length of the array.
+
+// Prototype implementation:
+// function unshift(array, newElement) {
+//     var lastIndex = array.length - 1;
+    
+//     for (i = lastIndex; i > -1; i--) {
+//         array[i + 1] = array[i];
+//     }
+    
+//     array[0] = newElement;
+    
+//     return array.length;
+// }
+
+function unshift(array) {
+    var lastIndex = array.length - 1;
+    var numberOfNewElements = arguments.length - 1;
+
+    for (var i = lastIndex; i > -1; i--) {
+        array[i + numberOfNewElements] = array[i];
+    }
+    
+    for (var j = 0; j < numberOfNewElements; j++) {
+      array[j] = arguments[j + 1];
+    }
+
+    return array.length;
+}
+
+tests({
+  'It should add elements to the beginning of the array.': function() {
+    var testArray = [1, 2, 3];
+    unshift(testArray, 0);
+    eq(testArray[0], 0);
+  },
+  'It should accept multiple elements to add to the array.': function() {
+    var testArray = [4, 5, 6];
+    var expectedArray = [1, 2, 3, 4, 5, 6];
+    unshift(testArray, 1, 2, 3);
+    testArray.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should increase the length of the array by the number of arguments other than the array itself.': function() {
+    var testArray = [1, 2, 3];
+    unshift(testArray, -1, 0);
+    eq(testArray.length, 5);
+  },
+  'It should return the new length of the array.': function() {
+    var testArray = [1, 2, 3];
+    var result = unshift(testArray, 0);
+    eq(result, 4);
+  }
+});
+
+</script>

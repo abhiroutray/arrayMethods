@@ -1,0 +1,126 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The copyWithin() method shallow copies part of an array to another location in the same array and returns it, without modifying its size.
+
+// Function signature:
+  // copyWithin(array, target[, start[, end]])
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // Returns the modified array.
+
+// Requirements:
+  // It should copy an element from one index in the array to another index in the array.
+  // It should return the modified array.
+  // It should not change the length of the array.
+  // It should accept a start argument from which index to begin copying elements.
+  // It should accept negative start values as an offset from the end of the array.
+  // It should accept an end argument as the index to copy elements up to.
+  // It should accept negative end values as an offset from the end of the array.
+
+// Prototype implementation:
+// function copyWithin(array, targetIndex, copyIndex) {
+//     array[targetIndex] = array[copyIndex];
+    
+//     return array;
+// }
+
+function copyWithin(array, target, start, end) {
+  var length = array.length;
+  
+  // no end provided
+  if (arguments.length < 4) {
+    end = array.length;
+  }
+
+  // no start provided
+  if (arguments.length < 3) {
+    start = 0;
+  }
+
+  if (start < 0) {
+    start += length;
+  }
+
+  if (end < 0) {
+    end += length;
+  }
+  
+  var elementsToCopy = [];
+  for (var i = start; i < end; i++) {
+    elementsToCopy[i - start] = array[i];
+  }
+
+  for (var i = start; i < end; i++) {    
+    var currentIndex = target + (i - start);
+    
+    // check that the loop does not add elements beyond the length of the original array
+    if (currentIndex === length) {
+      break;
+    }
+
+    array[currentIndex] = elementsToCopy[i - start];
+  }
+  
+  return array;
+}
+
+tests({
+  'It should copy an element from one index in the array to another index in the array.': function() {
+    var testArray = [1, 2, 3];
+    copyWithin(testArray, 0, 2);
+    eq(testArray[0], 3);
+  },
+  'It should return the modified array.': function() {
+    var testArray = [1, 2, 3];
+    var result = copyWithin(testArray, 0);
+    eq(result, testArray);
+  },
+  'It should not change the length of the array.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 2, 1];
+    var result = copyWithin(testArray, 2);
+    eq(testArray.length, 3);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should accept a start argument from which index to begin copying elements.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [2, 3, 3];
+    var result = copyWithin(testArray, 0, 1);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should accept negative start values as an offset from the end of the array.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 1, 2];
+    var result = copyWithin(testArray, 1, -3);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });    
+  },
+  'It should accept an end argument as the index to copy elements up to.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 1, 2];
+    var result = copyWithin(testArray, 1, 0, 2);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    }); 
+  },
+  'It should accept negative end values as an offset from the end of the array.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 1, 2];
+    var result = copyWithin(testArray, 1, 0, -1);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    }); 
+  }
+});
+
+</script>

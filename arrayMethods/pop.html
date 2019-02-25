@@ -1,0 +1,68 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The pop() method removes the last element from an array and returns that element.
+
+// Function signature:
+  // pop(array)
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // The removed element from the array; undefined if the array is empty.
+
+// Requirements:
+  // It should remove the last element from the array.
+  // It should reduce the length of the array by 1.
+  // It should return the last element.
+  // It should return undefined if the array is empty.
+
+// Prototype implementation:
+// function pop(array) {
+// 	var lastElement = array[array.length - 1];
+// 	array.length--;
+	
+// 	return lastElement;
+// }
+
+function pop(array) {
+  var lastElement = array[array.length - 1];
+  
+  if (array.length > 0) {
+    array.length--;
+  }
+
+  return lastElement;
+}
+
+tests({
+  'It should remove the last element from the array.': function() {
+    var testArray = [1, 2, 3];
+    pop(testArray);
+    eq(testArray[2], undefined);
+  },
+  'It should reduce the length of the array by 1.': function() {
+    var testArray = [1, 2, 3];
+    pop(testArray);
+    eq(testArray.length, 2);
+  },
+  'It should return the last element.': function() {
+    var testArray = [1, 2, 3];
+    var result = pop(testArray);
+    eq(result, 3);
+  },
+  'It should return undefined if the array is empty.': function() {
+    var testArray = [,];
+    var result1 = pop(testArray);
+    eq(result1, undefined);
+    eq(testArray.length, 0);
+
+    var result2 = pop(testArray);
+    eq(result2, undefined);
+    eq(testArray.length, 0);
+  }
+});
+
+</script>

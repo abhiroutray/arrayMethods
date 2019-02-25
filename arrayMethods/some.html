@@ -1,0 +1,144 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The some() method tests whether at least one element in the array passes the test implemented by the provided function.
+
+// Function signature:
+  // some(array, callback(element[, index[, array]])[, thisArg])
+
+// Callback parameters:
+  // element
+  // index
+  // array
+
+// Return value:
+  // true if any of the elements pass the callback, false otherwise.
+
+// Requirements:
+  // The callback should accept three arguments: the current element, the current index, and the array itself.
+  // It should accept an optional thisArgument.
+  // It should only visit element with assigned values (i.e not on holes or deleted values).
+  // It should run the callback for each element until one returns true.
+  // It should return true immediately when an element passes the callback.
+  // It should return false if all elements fail the callback.
+  // It should not visit elements appended to the array after some() has begun.
+  // It should not mutate the array on which it is being called.
+
+// Prototype implementation:
+// function some(array, callback) {
+//     for (var i = 0; i < array.length; i++) {
+//         if (callback(array[i])) {
+//             return true;
+//         }
+//     }
+//     return false;
+// }
+
+function some(array, callback, thisArg) {
+  var length = array.length;
+
+  if (thisArg) {
+    someCallback = callback.bind(thisArg);
+  } else {
+    someCallback = callback;
+  }
+
+  for (var i = 0; i < length; i++) {
+    if (i in array) {
+      if (someCallback(array[i], i, array)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+tests({
+  'The callback should accept the current element as its first argument.': function() {
+    some([1], function(element) {
+      eq(element, 1)
+    });
+  },
+  'The callback should accept the current index as its second argument.': function() {
+    some([1], function(element, index) {
+      eq(index, 0);
+    });
+  },
+  'The callback should accept the array itself as its third argument.': function() {
+    var testArray = [1, 2, 3];
+    some(testArray, function(element, index, array) {
+      eq(array, testArray);
+    });
+  },
+  'It should accept an optional thisArgument.': function() {
+    some([1], function() {
+      eq(this.description, 'I should be accessible inside the callback.');
+    }, {description: 'I should be accessible inside the callback.'});
+  },
+  'It should only run the callback for elements with assigned values (not for holes or deleted values).': function() {
+    var numTimesRun = 0;
+    some([, 1, 2, 3, ], function() {
+      numTimesRun++;
+    });
+    eq(numTimesRun, 3);
+  },
+  'It should return true immediately when an element passes the callback.': function() {
+    var numTimesRun = 0;
+    var result = some([1, 2, 3], function(element) {
+      numTimesRun++;
+      return element < 5;
+    });
+
+    eq(numTimesRun, 1);
+    eq(result, true);
+  },
+  'It should return false if all elements fail the callback.': function() {
+    var result = some([1, 2, 3], function(element) {
+      return element > 5;
+    });
+
+    eq(result, false);
+  },
+  'It should return false for an empty array.': function() {
+    var result1 = some([], function(element) {
+      return element > 5;
+    });
+
+    var result2 = some([,,,], function(element) {
+      return element > 5;
+    });
+
+    eq(result1, false);
+    eq(result2, false);
+  },
+  'It should not run the callback for elements appended to the array after some() has begun.': function() {
+    var numTimesRun = 0;
+    var testArray = [1, 2, 3];
+
+    some(testArray, function(element, index, array) {
+      if (index === 0) {
+        array.push(4);
+      }
+      numTimesRun++;
+    });
+
+    eq(testArray.length, 4);
+    eq(numTimesRun, 3);
+  },
+  'It should not mutate the array on which it is being called.': function() {
+    var testArray = [1, 2, 3];
+    var testArrayCopy = testArray.slice();
+
+    var result = some(testArray, function(element) {
+      return element > 5;
+    });
+
+    testArray.forEach(function(element, index) {
+      eq(element, testArrayCopy[index]);
+    });
+  }
+});
+
+</script>

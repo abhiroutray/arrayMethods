@@ -1,0 +1,104 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The includes() method determines whether an array includes a certain value among its entries.
+
+// Function signature:
+  // includes(array, valueToFind[, fromIndex])
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // Returns true if the value is in found in the array, false otherwise.
+
+// Requirements:
+  // It should search the array for the value being found.
+  // If the value is found, it should return true.
+  // If the value is not found, it should return false.
+  // If fromIndex is not provided, it should search the array from the beginning.
+  // If fromIndex is provided, it should search the array starting from that index.
+  // If fromIndex is greater than array.length, it should not search the array and return false.
+  // If fromIndex is negative, it should search the array starting from (fromIndex + array.length).
+  // It should skip holes in the array.
+
+// Prototype implementation:
+// function includes(array, valueToFind) {
+//     for (var i = 0; i < array.length; i++) {
+//         if (array[i] === valueToFind) {
+//             return true;
+//         }
+//     }
+// }
+
+function includes(array, valueToFind, fromIndex) {
+  var length = array.length;
+  var startIndex;
+
+  // No fromIndex provided
+  if (arguments.length < 3) {
+    startIndex = 0;
+  } else {  // Yes fromIndex provided
+    if (fromIndex < 0) {
+      // Computed index if fromIndex is negative
+      startIndex = fromIndex + length;
+    } else {
+      startIndex = fromIndex;
+    }
+  }
+
+  for (var i = startIndex; i < array.length; i++) {
+    if (array[i] === valueToFind) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+tests({
+  'If the value is found in the array, it should return true.': function() {
+    var testArray = [1, 2, 3];
+    var result = includes(testArray, 2);
+    eq(result, true);
+  },
+  'If the value is not found in the array, it should return false.': function() {
+    var testArray = [1, 2, 3];
+    var result = includes(testArray, 4);
+    eq(result, false);
+  },
+  'If fromIndex is not provided, it should search the array from the beginning.': function() {
+    var testArray = [1, 2, 3];
+    var result = includes(testArray, 2);
+    eq(result, true);
+  },
+  'If fromIndex is provided, it should search the array starting from that index.': function() {
+    var testArray = [1, 2, 3];
+    var result1 = includes(testArray, 1, 1);
+    var result2 = includes(testArray, 3, 1);
+
+    eq(result1, false);
+    eq(result2, true);
+  },
+  'If fromIndex is greater than array.length, it should not search the array and return false.': function() {
+    var testArray = [1, 2, 3];
+    var result = includes(testArray, 2, 4);
+    eq(result, false);
+  },
+  'If fromIndex is negative, it should search the array starting from (fromIndex + array.length).': function() {
+    var testArray = [1, 2, 3];
+    var result1 = includes(testArray, 2, -2);
+    var result2 = includes(testArray, 1, -2);
+    
+    eq(result1, true);
+    eq(result2, false);
+  },
+  'It should skip holes in the array.': function() {
+    var testArray = [, , 1, , 2, , 3, , ];
+    var result = includes(testArray, 2);
+    eq(result, true);
+  }
+});
+
+</script>

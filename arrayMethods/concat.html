@@ -1,0 +1,141 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The concat() method is used to merge two or more arrays.
+
+// Function signature:
+  // concat([value1[, value2[, ...[, valueN]]]])
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // Returns a new array comprised of the arrays passed into concat().
+
+// Requirements:
+  // It should accept any number of arguments.
+  // If an argument is an array, it should iterate over every element in the array.
+  // It should not modify any of the provided arguments.
+  // It should copy object references into the new array.
+    // Meaning, operations on objects in the new array will also show up in the old array.
+  // It should copy the values of primitives (i.e strings and numbers) into the new array.
+
+// Prototype implementation:
+// function concat() {
+//   var newArray = [];
+  
+//   for (var i = 0; i < arguments.length; i++) {
+//     var currentArray = arguments[i];
+//     for (var j = 0; j < currentArray.length; j++) {
+//       newArray.push(currentArray[j]);
+//     }
+//   }
+
+//   return newArray;
+// }
+
+function concat() {
+  var newArray = [];
+
+  for (var i = 0; i < arguments.length; i++) {
+    var currentArg = arguments[i];
+
+    if (currentArg instanceof Array) {
+      for (var j = 0; j < currentArg.length; j++) {
+        newArray.push(currentArg[j]);
+      }
+    } else {
+      newArray.push(currentArg);
+    }
+  }
+
+  return newArray;
+}
+
+tests({
+  'It should return an array.': function() {
+    var result = concat([1, 2, 3]);
+    var isArray = result instanceof Array;
+    eq(isArray, true);
+  },
+  'It should copy primitive values (strings, numbers, and booleans) into the array.': function() {
+    var expectedArray = [123, 'hello', true];
+    var result = concat(123, 'hello', true);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should copy object references into the new array such that changes to the objects themselves show up in the new array.': function() {
+    var myObject1 = {name: 'abhi'};
+    var myObject2 = {name: 'boris'};
+    var result = concat(myObject1, myObject2);
+    eq(result[0].name, 'abhi');
+    eq(result[1].name, 'boris');
+
+    myObject1.name = 'chris';
+    myObject2.name = 'nima';
+    eq(result[0].name, 'chris');
+    eq(result[1].name, 'nima');
+  },
+  'If an argument is an array, it should add every element to the new array.': function() {
+    var expectedArray = [1, 2, 3, 4];
+    var result = concat([1, 2, 3], 4);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should not recurse into nested arrays.': function() {
+    var expectedArray = [1, 2, [3, 4], 5];
+    var result = concat([1, 2, [3, 4]], 5);
+    result.forEach(function(element, index) {
+      if (element instanceof Array) {
+        for (var i = 0; i < element.length; i++) {
+          eq(element[i], expectedArray[index][i]);
+        }
+      } else {
+        eq(element, expectedArray[index]);
+      }
+    });
+  },
+  'It should merge arguments of different types into the new array.': function() {
+    var expectedArray = [123, 'abc', 4, 5, 6, {name: 'abhi'}];
+    var result = concat(123, 'abc', [4, 5, 6], {name: 'abhi'});
+    result.forEach(function(element, index) {
+      if (element instanceof Object) {
+        resultObject = JSON.stringify(element);
+        expectedObject = JSON.stringify(expectedArray[index]);
+        eq(resultObject, expectedObject);
+      } else {
+        eq(element, expectedArray[index]);
+      }
+    });
+  },
+  'It should accept empty arrays.': function() {
+    var expectedArray = [,,,];
+    var result = concat([], [,,,], []);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should not modify any of the arguments.': function() {
+    var arg1 = 123;
+    var arg2 = 'abc';
+    var arg3 = [4, 5, 6];
+    var arg4 = {name: 'abhi'};
+
+    var arg3Copy = arg3.slice();
+    var arg4Copy = JSON.stringify(arg4);
+
+    var result = concat(arg1, arg2, arg3, arg4);
+
+    eq(arg1, 123);
+    eq(arg2, 'abc');
+    arg3.forEach(function(element, index) {
+      eq(element, arg3Copy[index]);
+    });
+    eq(JSON.stringify(arg4), arg4Copy);
+  }
+});
+
+</script>

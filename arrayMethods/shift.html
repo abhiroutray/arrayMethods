@@ -1,0 +1,83 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The shift() method removes the first element from an array and returns that removed element.
+
+// Function signature:
+  // shift(array)
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // The removed element from the array; undefined if the array is empty.
+
+// Requirements:
+  // It should remove the first element from the array.
+  // It should shift the index of each element down 1.
+  // It should reduce the length of the array by 1.
+  // It should return the first element.
+  // It should return undefined if the array is empty.
+
+// Prototype implementation:
+// function shift(array) {
+// 	var firstElement = array[0];
+
+// 	for (var i = 0; i < array.length; i++) {
+//         array[i] = array[i + 1];
+//     }
+    
+// 	array.length--;
+
+// 	return firstElement;
+// }
+
+function shift(array) {
+	var firstElement = array[0];
+
+	for (var i = 0; i < array.length; i++) {
+        array[i] = array[i + 1];
+    }
+  
+  if (array.length > 0) {
+    array.length--;
+  }
+
+	return firstElement;
+}
+
+tests({
+  'It should remove the first element from the array.': function() {
+    var testArray = [1, 2];
+    shift(testArray);
+    eq(testArray[0] === 1, false);
+  },
+  'It should shift the index of each element down 1.': function() {
+    var testArray = [1, 2];
+    shift(testArray);
+    eq(testArray[0], 2);
+  },
+  'It should reduce the length of the array by 1.': function() {
+    var testArray = [1, 2];
+    shift(testArray);
+    eq(testArray.length, 1);
+  },
+  'It should return the first element.': function() {
+    var testArray = [1, 2];
+    var result = shift(testArray);
+    eq(result, 1);
+  },
+  'It should return undefined if the array is empty.': function() {
+    var testArray = [,];
+    var result1 = shift(testArray);
+    eq(result1, undefined);
+    eq(testArray.length, 0);
+
+    var result2 = shift(testArray);
+    eq(result2, undefined);
+    eq(testArray.length, 0);
+  }
+});
+
+</script>

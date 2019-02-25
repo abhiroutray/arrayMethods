@@ -1,0 +1,159 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description: 
+  // find() returns either the value of the first element in the array that meets the requirements of the provided testing function or undefined otherwise.
+
+// Function signature:
+  // find(array, callback[, thisArg])
+
+// Callback parameters:
+  // element
+  // index
+  // array
+
+// Return value:
+  // Returns a single value.
+
+// Requirements:
+  // Execute callback once for each element in array
+  // If callback returns true, return that element
+  // If callback never returns true, return undefined
+  // The callback should be invoked for all indices, not just those that have been assigned values
+  // The callback should accept three arguments: the element value, the element index, and the array itself.
+  // find() should accept a configurable thisObject
+  // find() should not mutate the array being traversed
+  // find() should not visit elements appended to array after find() begins
+  // Existing elements whose value is changed before find() gets to it should use the value at the time find() visits it
+  // Deleted elements should still be visited by find()
+
+// Prototype implementation:
+  // function find(array, callback) {
+  //     for (var i = 0; i < array.length; i++) {
+  //         var condition = callback(array[i]);
+  //         if (condition === true) {
+  //             return array[i];
+  //         }
+  //     }
+  //     return undefined;
+  // }
+
+function find(array, callback, thisArg) {
+  var length = array.length;
+
+  if (thisArg) {
+    findCallback = callback.bind(thisArg);
+  } else {
+    findCallback = callback;
+  }
+
+  for (var i = 0; i < length; i++) {
+    var callbackBoolean = findCallback(array[i], i, array);
+    if (callbackBoolean) {
+      return array[i];
+    }
+  }
+
+  return undefined;
+}
+
+tests({
+  'It should run the callback array.length times.': function() {
+    var numTimesRun = 0;
+    find([1, 2, 3], function() {
+      numTimesRun++;
+    });
+    eq(numTimesRun, 3);
+  },
+  'It should run the callback for all indices in the array, not just those that have been assigned values.': function() {
+    var numTimesRun = 0;
+    find([, 1, , 2, , 3], function() {
+      numTimesRun++;
+    });
+    eq(numTimesRun, 6);
+  },
+  'It should pass the ith element as the first argument to the callback.': function() {
+    find([1], function(element) {
+      eq(element, 1);
+    });
+  },
+  'It should pass the ith index as the second argument to the callback.': function() {
+    find([1], function(element, index) {
+      eq(index, 0);
+    });
+  },
+  'It should pass the array as the third argument to the callback.': function() {
+    testArray = [1, 2, 3];
+    find(testArray, function(element, index, array) {
+      eq(array, testArray);
+    });
+  },
+  'It should accept an optional configurable thisArg as the third argument.': function() {
+    find([1], function() {
+      eq(this.description, 'I should be accessible inside the callback.');
+    }, {description: 'I should be accessible inside the callback.'});
+  },
+  'It should return the first element for which the callback returns true.': function() {
+    var result = find([1, 2, 3], function(element) {
+      return element === 2;
+    });
+    eq(result, 2);
+  },
+  'If the callback never returns true, find() should return undefined.': function() {
+    var result = find([1, 2, 3], function(element) {
+      return element === 4;
+    });
+    eq(result, undefined);
+  },
+  'It should not mutate the original array being traversed.': function() {
+    var arrayBeingTraversed = [];
+    var arrayBeingTraversedCopy = arrayBeingTraversed;
+    var result = find(arrayBeingTraversed, function() {});
+    arrayBeingTraversed.forEach(function(element, index) {
+      eq(element, arrayBeingTraversedCopy[index]);
+    }); 
+  },
+  'It should not visit elements appended to the array after the call to find() has begun.': function() {
+    var testArray = [1, 2, 3];
+    var result = find(testArray, function(element, index, array) {
+      array.push(4);
+      return element === 4;
+    });
+    eq(result, undefined);
+  },
+  'It should use whatever the value of the element is at the time find() visits that index.': function() {
+    var result1 = find([1, 2, 3], function(element, index, array) {
+      if (index === 1) {
+        array[1] = 5;
+      }
+      
+      return element === 5;
+    });
+
+    var result2 = find([1, 2, 3], function(element, index, array) {
+      if (index === 1) {
+        array[2] = 5;
+      }
+
+      return element === 5;
+    });
+
+    eq(result1, undefined);
+    eq(result2, 5);
+  },
+  'It should visit deleted items.': function() {
+    find([1, 2, 3], function(element, index, array) {
+      if (index === 0) {
+        delete array[1];
+      }
+
+      if (index === 1) {
+        eq(element, undefined);
+      }
+
+      eq(array.length, 3);
+    });    
+  }
+});
+
+</script>

@@ -1,0 +1,148 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The findIndex() method returns the index of the first element in the array that satisfies callback. Otherwise, it returns -1.
+
+// Function signature:
+  // findIndex(callback(element[, index[, array]])[, thisArg])
+
+// Callback parameters:
+  // element
+  // index
+  // array
+
+// Return value:
+  // Either the index of the first element that passes the callback, or -1.
+
+// Requirements:
+  // It should run the callback array.length times.
+  // If callback returns true, findIndex() should return that index.
+  // If callback never returns true, findIndex() should return -1.
+  // The callback should be run for all indices (including holes).
+  // It should accept a configurable thisObject.
+  // The callback should accept three arguments: the current element, the current index, and the array being traversed.
+  // It should not visit elements appended after findIndex() has begun.
+  // It should visit all elements, even if they are deleted.
+  // If a value is changed, it should use the value of the element that exists when find visits that index.
+
+// Prototype implementation:
+// function findIndex(array, callback) {
+//     for (var i = 0; i < array.length; i++) {
+//         if (callback(array[i])) {
+//             return i;
+//         }
+//     }
+// }
+
+function findIndex(array, callback, thisArg) {
+  var length = array.length;
+  
+  if (thisArg) {
+    findIndexCallback = callback.bind(thisArg);
+  } else {
+    findIndexCallback = callback;
+  }
+  
+  for (var i = 0; i < length; i++) {
+    if (findIndexCallback(array[i], i, array)) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+tests({
+  'It should run the callback array.length times.': function() {
+    var numTimesRun = 0;
+    findIndex([1, 2, 3], function() {
+      numTimesRun++;
+    });
+    eq(numTimesRun, 3);
+  },
+  'The callback should accept the current element as its first argument.': function() {
+    findIndex([1], function(element) {
+      eq(element, 1);
+    });
+  },
+  'The callback should accept the current index as its second argument.': function() {
+    findIndex([1], function(element, index) {
+      eq(index, 0);
+    })
+  },
+  'The callback should accept the array itself as its third argument.': function() {
+    var testArray = [1];
+    findIndex(testArray, function(element, index, array) {
+      eq(array, testArray);
+    });
+  },
+  'It should accept a configurable thisObject.': function() {
+    findIndex([1], function() {
+      eq(this.description, 'I should be accessible inside the callback.')
+    }, {description: 'I should be accessible inside the callback.'});
+  },
+  'If callback returns true, findIndex() should return that index.': function() {
+    var result = findIndex([1, 2, 3], function(element) {
+      return element === 2;
+    });
+    eq(result, 1);
+  },
+  'If callback never returns true, findIndex() should return -1.': function() {
+    var result = findIndex([1, 2, 3], function(element) {
+      return element === 4;
+    });
+    eq(result, -1);
+  },
+  'The callback should be run for all indices (including holes).': function() {
+    var numTimesRun = 0;
+    findIndex([, 1, , 2, , 3], function() {
+      numTimesRun++;
+    });
+    eq(numTimesRun, 6);
+  },
+  'It should not visit elements appended to the array after findIndex() has begun.': function() {
+    result = findIndex([1, 2, 3], function(element, index, array) {
+      if (index === 0) {
+        array[3] = 4;
+      }
+      return element === 4;
+    })
+    eq(result, -1);
+  },
+  'It should visit all elements, even if they are deleted.': function() {
+    findIndex([1, 2, 3], function(element, index, array) {
+      if (index === 0) {
+        delete array[1];
+      }
+
+      if (index === 1) {
+        eq(element, undefined);
+      }
+
+      eq(array.length, 3);
+    })
+  },
+  'If a value is changed, it should use the value of the element that exists when find visits that index.': function() {
+    var result1 = findIndex([1, 2, 3], function(element, index, array) {
+      if (index === 1) {
+        array[1] = 5;
+      }
+
+      return element === 5;
+    });
+
+    var result2 = findIndex([1, 2, 3], function(element, index, array) {
+      if (index === 1) {
+        array[2] = 5;
+      }
+
+      return element === 5;
+    });
+
+    eq(result1, -1);
+    eq(result2, 2);
+  }
+});
+
+</script>

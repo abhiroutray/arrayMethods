@@ -1,0 +1,72 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The push() method adds one or more elements to the end of an array and returns the new length of the array.
+
+// Function signature:
+  // push(array, element1[, ...[, elementN]])
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // The new length of the array on which it was called.
+
+// Requirements:
+  // It should add elements to the end of the array.
+  // It should return the new length of the array.
+  // It should accept primitives as arguments.
+  // It should accept objects as arguments, maintaining their reference.
+  // It should accept arrays as arguments.
+
+// Prototype implementation:
+// function push(array, element) {
+//     array[array.length] = element;
+// }
+
+function push(array) {
+  for (var i = 1; i < arguments.length; i++) {
+    array[array.length] = arguments[i];
+  }
+
+  return array.length;
+}
+
+tests({
+  'It should add elements to the end of the array.': function() {
+    var testArray = [1, 2, 3];
+    push(testArray, 4);
+    eq(testArray[3], 4);
+  },
+  'It should return the new length of the array.': function() {
+    var testArray = ['a', 'b', 'c'];
+    var result = push(testArray, 'd');
+    eq(result, 4);
+  },
+  'It should accept any number of arguments.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 2, 3, 4, 5, 6];
+    push(testArray, 4, 5, 6);
+    eq(testArray.length, 6);
+    testArray.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should accept objects as arguments, maintaining their reference.': function() {
+    var testArray = [1, 2, 3];
+    var myObject = {name: 'abhi'};
+    push(testArray, myObject);
+    eq(testArray[3], myObject);
+  },
+  'It should accept arrays as arguments.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 2, 3, [4, 5, 6]];
+    push(testArray, [4, 5, 6]);
+    for (var i = 0; i < 3; i++) {
+      eq(testArray[3][i], expectedArray[3][i]);
+    }
+  }
+});
+
+</script>

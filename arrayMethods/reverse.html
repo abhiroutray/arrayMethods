@@ -1,0 +1,71 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The reverse() method reverses an array in place.
+
+// Function signature:
+  // reverse(array)
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // It returns the reversed array.
+
+// Requirements:
+  // It should reverse the order of elements in the array.
+  // It should modify the array being reversed.
+  // It should return a reference to the original array.
+
+// Prototype implementation:
+// function reverse(array) {
+//     var copyOfOriginalArray = [];    
+//     for (var i = 0; i < array.length; i++) {
+//         copyOfOriginalArray[i] = array[i];
+//     }
+    
+// 	var length = copyOfOriginalArray.length;
+//     for (var i = 0; i < length; i++) {
+// 		array[i] = copyOfOriginalArray[length - (i + 1)];
+//     }
+
+// 	return array;
+// }
+
+function reverse(array) {
+    var copyOfOriginalArray = [];    
+    for (var i = 0; i < array.length; i++) {
+        copyOfOriginalArray[i] = array[i];
+    }
+    
+	var length = copyOfOriginalArray.length;
+    for (var i = 0; i < length; i++) {
+		array[i] = copyOfOriginalArray[length - (i + 1)];
+    }
+
+	return array;
+}
+
+tests({
+  'It should reverse the order of elements in the array.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [3, 2, 1];
+    reverse(testArray);
+    testArray.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should make the changes in place (on the original array).': function() {
+    var testArray = [1, 2, 3];
+    reverse(testArray);
+    eq(testArray[0], 3);
+  },
+  'It should return a reference to the original array.': function() {
+    var testArray = [1, 2, 3];
+    var result = reverse(testArray);
+    eq(result, testArray);
+  }
+});
+
+</script>

@@ -1,0 +1,92 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The join() method creates and returns a new string by concatenating all of the elements in an array, separated by commas or a specified separator string.
+
+// Function signature:
+  // join(array[, separator])
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // A string with all array elements joined. If array.length is 0, the empty string is returned.
+
+// Requirements:
+  // It should convert each array element to a string.
+  // If an element is undefined, or null, it should be converted to the empty string.
+  // It should return a single string composed of all the array elements.
+  // It should accept a separator to be placed between each element.
+  // If no separator is provided, it should default to a comma.
+
+// Prototype implementation:
+// function join(array) {
+//     var newString = '';
+    
+//     for (var i = 0; i < array.length; i++) {
+//         newString += array[i].toString();
+//     }
+    
+//     return newString;
+// }
+
+function join(array, separator) {
+  var newString = '';
+
+  if (arguments.length < 2) {
+    separator = ',';
+  }
+
+  for (var i = 0; i < array.length; i++) {
+    var currentElement;
+    
+    if (array[i] == null) {
+      currentElement = '';
+    } else {
+      currentElement = array[i].toString();
+    }
+    
+    // If adding the last element, don't add a separator afterwards
+    if (i === array.length - 1) {
+      newString += currentElement;
+    } else {
+      newString += currentElement + separator;
+    }
+  }
+
+  return newString;
+}
+
+tests({
+  'It should return a single string.': function() {
+    var result = join([1, 2, 3]);
+    eq(typeof result, 'string');
+  },
+  'It should convert each array element to a string.': function() {
+    var testArray = [123, 'abc', true, {name: 'abhi'}];
+    var expectedString = '123,abc,true,[object Object]';
+    var result = join(testArray);
+    eq(result, expectedString);
+  },
+  'If an element is undefined, null, or empty, it should be converted to the empty string.': function() {
+    var testArray = [1, undefined, null, , , 2];
+    var expectedString = '1,,,,,2';
+    var result = join(testArray);
+    eq(result, expectedString);
+  },
+  'It should accept a separator to be placed between each element.': function() {
+    var testArray = [1, 2, 3];
+    var expectedString = '1-2-3'
+    var result = join(testArray, '-');
+    eq(result, expectedString);
+  },
+  'If no separator is provided, it should default to a comma.': function() {
+    var testArray = [1, 2, 3];
+    var expectedString = '1,2,3';
+    var result = join(testArray);
+    eq(result, expectedString);
+  }
+});
+
+</script>

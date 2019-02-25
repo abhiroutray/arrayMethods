@@ -1,0 +1,148 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The every() method tests whether all elements in the array pass the test implemented by the provided function.
+
+// Function signature:
+  // every(array, callback[, thisArg])
+
+// Callback parameters:
+  // element
+  // index
+  // array
+
+// Return value:
+  // true if the callback returns true for every element, false otherwise.
+
+// Requirements:
+  // The callback should accept three arguments: the element, its index, and the array itself.
+  // It should accept an optional thisArgument.
+  // It should only visit elements with assigned values (i.e not on holes or deleted values).
+  // It should run the callback on every element until one returns false.
+  // It should return false immediately when an element fails the callback.
+  // It should return true if all elements pass the callback.
+  // It should return true for an empty array.
+  // It should not visit elements appended to the array after every() has begun.
+  // It should not mutate the array on which it is called.
+
+// Prototype implementation:
+// function every(array, callback) {
+//     for (var i = 0; i < array.length; i++) {
+//         if (callback(array[i]) === false) {
+//             return false;
+//         }
+//     }
+//     return true;
+// }
+
+function every(array, callback, thisArg) {
+  var length = array.length;
+
+  if (thisArg) {
+    everyCallback = callback.bind(thisArg);
+  } else {
+    everyCallback = callback;
+  }
+
+  for (var i = 0; i < length; i++) {
+    if (i in array) {
+      if (everyCallback(array[i], i, array) === false) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+tests({
+  'The callback should accept the current element as its first argument.': function() {
+    every([1], function(element) {
+      eq(element, 1);
+    });
+  },
+  'The callback should accept the current index as its second argument.': function() {
+    every([1], function(element, index) {
+      eq(index, 0);
+    });
+  },
+  'The callback should accept the array itself as its third argument.': function() {
+    var testArray = [1, 2, 3];
+    every(testArray, function(element, index, array) {
+      eq(array, testArray);
+    });
+  },
+  'It should accept an optional thisArgument.': function() {
+    every([1], function() {
+      eq(this.description, 'I should be accessible inside the callback.');
+    }, {description: 'I should be accessible inside the callback.'});
+  },
+  'It should only visit elements with assigned values (i.e not on holes or deleted values).': function() {
+    var numTimesRun = 0;
+    every([, 1, , 2, , 3], function() {
+      numTimesRun++;
+    });
+    eq(numTimesRun, 3);
+  },
+  'It should run the callback on every element until one returns false.': function() {
+    var numTimesRun = 0;
+    every([1, 2, 3], function(element) {
+      numTimesRun++;
+      return element < 2;
+    });
+    eq(numTimesRun, 2);
+  },
+  'It should return false immediately when an element fails the callback.': function() {
+    var result = every([1, 2, 3], function(element) {
+      return element < 2;
+    });
+    eq(result, false);
+  },
+  'It should return true if all elements pass the callback.': function() {
+    var result = every([1, 2, 3], function(element) {
+      return element < 5;
+    });
+    eq(result, true);
+  },
+  'It should return true for an empty array.': function() {
+    var result1 = every([], function(element) {
+      return element < 5;
+    });
+
+    var result2 = every([,,,], function(element) {
+      return element < 5;
+    });
+
+    eq(result1, true);
+    eq(result2, true);
+  },
+  'It should not visit elements appended to the array after every() has begun.': function() {
+    var testArray = [1, 2, 3];
+    var numTimesRun = 0;
+    every(testArray, function(element, index, array) {
+      if (index === 0) {
+        array.push(4);
+      }
+
+      numTimesRun++;
+    });
+
+    eq(testArray.length, 4);
+    eq(numTimesRun, 3);
+  },
+  'It should not mutate the array on which it is called.': function() {
+    testArray = [1, 2, 3];
+    testArrayCopy = testArray.slice();
+
+    var result = find(testArray, function() {
+      return true;
+    });
+
+    testArray.forEach(function(element, index) {
+      eq(element, testArrayCopy[index]);
+    });
+  }
+});
+
+</script>

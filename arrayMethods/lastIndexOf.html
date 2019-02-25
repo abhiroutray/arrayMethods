@@ -1,0 +1,110 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The lastIndexOf() method returns the last index at which a given element can be found in the array, or -1 if it is not present. The array is searched backwards, starting at fromIndex.
+
+// Function signature:
+  // lastIndexOf(array, searchElement[, fromIndex])
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // The index of the element being searched; -1 if not found.
+
+// Requirements:
+  // It should iterate through the array in reverse.
+  // It should compare each element in the array to the searchElement using strict equality.
+  // It should return the index of the element if it is found.
+  // It should return -1 if the element is not found.
+  // If the fromIndex argument is provided, it should start searching the array from that index.
+  // If fromIndex is negative, it should be taken as an offset from the end of the array.
+  // If fromIndex is negative, it should still search the array going backwards.
+
+// Prototype implementation:
+// function lastIndexOf(array, searchElement) {
+//     for (var i = array.length - 1; i > -1; i--) {
+//         if (array[i] === searchElement) {
+//             return i;
+//         }
+//     }
+// }
+
+function lastIndexOf(array, searchElement, fromIndex) {
+  var length = array.length - 1;
+  var startIndex;
+
+  // No fromIndex provided
+  if (arguments.length < 3) {
+    startIndex = length;
+  } else { // Yes fromIndex provided
+    
+    // Check if fromIndex is negative
+    if (fromIndex < 0) {
+      // Offset from end of array
+      startIndex = length + fromIndex;
+    } else {
+      // Regular fromIndex case
+      startIndex = fromIndex;
+    }
+  }
+  
+  for (var i = startIndex; i > -1; i--) {
+    if (array[i] === searchElement) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+tests({  
+  'It should return the index of the element if it is found.': function() {
+    var testArray = [1, 2, 3];
+    var result = lastIndexOf(testArray, 2);
+    eq(result, 1);
+  },
+  'It should iterate through the array in reverse.': function() {
+    var testArray = [1, 2, 2, 3];
+    var result = lastIndexOf(testArray, 2);
+    eq(result, 2);
+  },
+  'It should compare each element in the array to the searchElement using strict equality.': function() {
+    var testArray = [1, 2, '2', 3];
+    var result = lastIndexOf(testArray, 2);
+    eq(result, 1);
+  },
+  'It should return -1 if the element is not found.': function() {
+    var testArray = [1, 2, 3];
+    var result = lastIndexOf(testArray, 4);
+    eq(result, -1);
+  },
+  'It should skip holes in the array.': function() {
+    var testArray = [, , 1, , , 2, , , 2, , , 3, , ,];
+    var result = lastIndexOf(testArray, 2);
+    eq(result, 8);
+  },
+  'If fromIndex is provided, it should start searching the array from that index.': function() {
+    var testArray = [1, 2, 3, 1, 2, 3];
+    var result = lastIndexOf(testArray, 2, 3);
+    eq(result, 1);
+  },
+  'If fromIndex is not provided, it should default to searching from the last index in the array.': function() {
+    var testArray = [1, 2, 2, 3];
+    var result = lastIndexOf(testArray, 2);
+    eq(result, 2);
+  },
+  'If fromIndex is negative, it should be taken as an offset from the end of the array.': function() {
+    var testArray = [1, 2, 3, 1, 2, 3];
+    var result = lastIndexOf(testArray, 2, -2);
+    eq(result, 1);
+  },
+  'If fromIndex is negative, it should still search the array going backwards.': function() {
+    var testArray = [1, 2, 2, 3, 1, 2, 3];
+    var result = lastIndexOf(testArray, 2, -2);
+    eq(result, 2);
+  }
+});
+
+</script>

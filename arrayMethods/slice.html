@@ -1,0 +1,178 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Function description:
+  // The slice() method returns a shallow copy of a portion of an array into a new array object selected from begin to end (end not included).
+
+// Function signature:
+  // slice(array, [begin[, end]])
+
+// Callback parameters:
+  // This function has no callback.
+
+// Return value:
+  // A new array containing the extracted elements.
+
+// Requirements:
+  // It should make a shallow copy of the provided array.
+  // It should accept a beginning index at which to start slicing.
+  // If begin is not provided, it should default to index 0.
+  // If begin is negative, it should offset from the end of the array.
+  // If begin is greater than array.length, it should return an empty array.
+  // It should accept an ending index, at which to slice up to but not including this index.
+  // If end is not provided, it should default to array.length.
+  // If end is negative, it should offset from the end of the array.
+  // If end is greater than array.length, it should slice to the end of the array.
+  // It should not alter the original array.
+  // Object references should be copied into the new array (so that changes to the object show up in both arrays).
+  // Primitives (strings, numbers, booleans) should have their values copied over (changes to these only show up in that specific array).
+  
+// Prototype implementation:
+// function slice(array, begin, end) {
+//     var newArray = [];
+    
+//     for (var i = begin; i < end; i++) {
+//         newArray.push(array[i]);
+//     }
+    
+//     return newArray;
+// }
+
+function slice(array, begin, end) {
+  var newArray = [];
+  var startIndex;
+  var endIndex;
+
+  if (arguments.length > 1) { // begin is provided
+    if (begin < 0) {  // begin is negative
+      startIndex = begin + array.length;  // calculate offset
+    } else {  // 
+      startIndex = begin;
+    }
+    
+    if (arguments.length > 2) { // end is provided
+      endIndex = end;
+    } else {  // end is not provided
+      endIndex = array.length;
+    }
+  } else {  // begin is not provided
+    startIndex = 0;
+    endIndex = array.length;
+  }
+
+  for (var i = startIndex; i < endIndex; i++) {
+    newArray.push(array[i]);
+  }
+
+  return newArray;
+}
+
+tests({
+  'It should make a shallow copy of the provided array.': function() {
+    var testArray = [1, 2, 3];
+    var result = slice(testArray);
+    result.forEach(function(element, index) {
+      eq(element, testArray[index]);
+    });
+    eq(testArray === result, false);
+  },
+  'It should accept a beginning index at which to start slicing.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [2, 3];
+    var result = slice(testArray, 1);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'If begin is not provided, it should default to index 0.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 2, 3];
+    var result = slice(testArray);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'If begin is negative, it should offset from the end of the array.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [2, 3];
+    var result = slice(testArray, -2);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'If begin is greater than array.length, it should return an empty array.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [];
+    var result = slice(testArray, 4);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should accept an ending index, at which to slice up to but not including this index.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 2];
+    var result = slice(testArray, undefined, 2);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'If end is not provided, it should default to array.length.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 2, 3];
+    var result = slice(testArray, undefined);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'If end is negative, it should offset from the end of the array.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 2];
+    var result = slice(testArray, undefined, -1);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'If end is greater than array.length, it should slice to the end of the array.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 2, 3];
+    var result = slice(testArray, undefined, 4);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should not alter the original array.': function() {
+    var testArray = [1, 2, 3];
+    var expectedArray = [1, 2, 3];
+    var result = slice(testArray);
+    testArray.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'Object references should be copied into the new array (so that changes to the object show up in both arrays).': function() {
+    var myObject = {name: 'abhi'};
+    var testArray = [myObject];
+    var result = slice(testArray);
+    eq(result[0].name, 'abhi');
+
+    myObject.name = 'boris';
+    eq(result[0].name, 'boris');
+  },
+  'Primitives (strings, numbers, booleans) should have their values copied over (changes to these only show up in that specific array).': function() {
+    var testArray = ['123', 123, true];
+    var expectedArray = ['123', 123, true];
+    var result = slice(testArray);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  },
+  'It should copy holes into the new array.': function() {
+    var testArray = [, , 1, , , 2, , , 3, , ];
+    var expectedArray = [, , 1, , , 2, , , 3, , ];
+    var result = slice(testArray);
+    result.forEach(function(element, index) {
+      eq(element, expectedArray[index]);
+    });
+  }
+});
+
+</script>
